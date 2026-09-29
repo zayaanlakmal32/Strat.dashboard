@@ -121,14 +121,27 @@
   .status-pill.watch{background:var(--amber-bg);color:var(--amber);}
   .status-pill.empty{background:var(--gray-chip-bg);color:var(--gray-chip-text);}
 
-  .podium-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:18px;}
-  .podium-card{background:var(--card-bg);border:1px solid var(--border);border-radius:18px;padding:22px 18px 18px;box-shadow:var(--shadow);text-align:center;position:relative;}
-  .podium-rank{position:absolute;top:14px;left:14px;font-size:15px;}
+  .perf-title{text-align:center;font-size:22px;font-weight:700;margin:2px 0 6px;}
+  .perf-subtitle{text-align:center;font-size:13px;color:var(--text-muted);max-width:600px;margin:0 auto 24px;line-height:1.55;}
+
+  .podium-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;align-items:start;}
+  @media (max-width:640px){.podium-row{grid-template-columns:1fr;}}
+  .podium-card{background:var(--card-bg);border:1px solid var(--border);border-radius:18px;padding:22px 18px 0;box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden;}
+  .podium-card.first{transform:scale(1.06);z-index:2;box-shadow:0 4px 26px rgba(61,111,224,.22),var(--shadow);animation:podiumPop .5s cubic-bezier(.2,.9,.3,1.2) both;}
+  @keyframes podiumPop{from{transform:scale(.92);opacity:0;}to{transform:scale(1.06);opacity:1;}}
+  .podium-rank-badge{position:absolute;top:14px;left:14px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+  .podium-rank-badge.rank1{background:var(--blue-bg);color:var(--blue);}
+  .podium-rank-badge.rank2{background:var(--green-bg);color:var(--green);}
+  .podium-rank-badge.rank3{background:var(--amber-bg);color:var(--amber);}
   .podium-avatar{width:60px;height:60px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin:4px auto 12px;}
   .podium-name{font-weight:700;font-size:15px;}
   .podium-pct{font-size:32px;font-weight:700;margin-top:10px;}
   .podium-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
-  .podium-sub{font-size:11.5px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+  .podium-sub{font-size:11.5px;color:var(--text-muted);margin-top:10px;line-height:1.5;padding-bottom:18px;}
+  .podium-ribbon{margin:16px -18px 0;padding:9px 0;text-align:center;font-weight:700;font-size:12.5px;}
+  .podium-ribbon.rank1{background:var(--blue-bg);color:var(--blue);}
+  .podium-ribbon.rank2{background:var(--green-bg);color:var(--green);}
+  .podium-ribbon.rank3{background:var(--amber-bg);color:var(--amber);}
 
   .perf-list{display:flex;flex-direction:column;gap:8px;}
   .perf-row{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow);flex-wrap:wrap;}
@@ -144,7 +157,6 @@
   .perf-delta.down{background:var(--red-bg);color:var(--red);}
   .perf-delta.flat{background:var(--gray-chip-bg);color:var(--text-muted);}
   .perf-spark{flex-shrink:0;}
-  .perf-note{font-size:12px;color:var(--text-muted);margin:0 0 14px;}
   .pct-row{display:flex;align-items:baseline;gap:8px;margin-top:14px;}
   .pct-row .pct{font-size:30px;font-weight:700;}
   .pct-row .pct-sub{font-size:12.5px;color:var(--text-muted);}
@@ -442,19 +454,27 @@ function render(){
   const perf = REPORT.performance || [];
   const top3 = perf.slice(0,3);
   const medal = ["🥇","🥈","🥉"];
+  const rankClass = ["rank1","rank2","rank3"];
+  const rankLabel = ["1st place","2nd place","3rd place"];
+  // Podium sits 2nd–1st–3rd left to right, 1st place raised and popped in.
+  const podiumOrder = top3.length === 3 ? [1,0,2] : top3.map((_,i)=>i);
   html += `<section class="view ${currentView==='performance'?'active':''}" id="view-performance">
-    <p class="perf-note">Ranked by overall delivery % across each PO's clients. The trend line shows their on-time rate for ideas due in each of the last 6 rolling weeks — new POs or early weeks will look sparse until more history builds up.</p>
+    <h2 class="perf-title">Top Performers</h2>
+    <p class="perf-subtitle">Ranked by overall delivery % across each PO's clients. The trend line below shows their on-time rate for ideas due in each of the last 6 rolling weeks — new POs or early weeks will look sparse until more history builds up.</p>
     <div class="podium-row">
-      ${top3.map((p,idx)=>{
+      ${podiumOrder.map(rankIdx=>{
+        const p = top3[rankIdx];
         const tag = tierTag(p.pct);
-        return `<div class="podium-card">
-          <div class="podium-rank">${medal[idx]}</div>
+        const rc = rankClass[rankIdx];
+        return `<div class="podium-card ${rankIdx===0?'first':''}">
+          <div class="podium-rank-badge ${rc}">${rankIdx+1}</div>
           <div class="podium-avatar">${initials(p.po)}</div>
           <div class="podium-name">${p.po}</div>
           <span class="status-pill ${tag.cls}">${tag.label}</span>
           <div class="podium-pct">${p.pct==null?'—':p.pct+'%'}</div>
           <div class="podium-label">Portfolio delivery</div>
           <div class="podium-sub">${p.clientsOnTrack}/${p.clientsTotal} clients on track<br/>${p.executed}/${p.suggested-p.excluded} ideas executed</div>
+          <div class="podium-ribbon ${rc}">${rankLabel[rankIdx]}</div>
         </div>`;
       }).join("")}
     </div>
