@@ -11,7 +11,7 @@
     --blue:#3d6fe0; --blue-bg:#eef3fe; --green:#2f9e5b; --green-bg:#eaf7ef;
     --red:#d64545; --red-bg:#fbebeb; --amber:#b3690f; --amber-bg:#faf1e2;
     --gray-chip-bg:#f1f1ee; --gray-chip-text:#5b6068; --purple:#8457dd; --purple-bg:#f4f0fc;
-    --teal:#159c8f; --teal-bg:#e9f7f5;
+    --teal:#159c8f; --teal-bg:#e9f7f5; --row-bg:#f4f4f1;
     --shadow:0 1px 2px rgba(16,24,40,.03), 0 4px 12px rgba(16,24,40,.04);
     --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23767b84' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); box-sizing:border-box;
@@ -21,7 +21,7 @@
       --bg:#15171a; --card-bg:#1d2023; --text:#e8e9eb; --text-muted:#9297a0; --border:#2c3034;
       --header-bg: rgba(23,25,28,.65);
       --blue-bg:#1b2a44; --green-bg:#163326; --red-bg:#38201f; --amber-bg:#392a12;
-      --gray-chip-bg:#26292d; --gray-chip-text:#c6cad0; --purple-bg:#291f37; --teal-bg:#12312d;
+      --gray-chip-bg:#26292d; --gray-chip-text:#c6cad0; --purple-bg:#291f37; --teal-bg:#12312d; --row-bg:#24272b;
       --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
       --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
@@ -30,7 +30,7 @@
     --bg:#15171a;--card-bg:#1d2023;--text:#e8e9eb;--text-muted:#9297a0;--border:#2c3034;
     --header-bg: rgba(23,25,28,.65);
     --blue-bg:#1b2a44;--green-bg:#163326;--red-bg:#38201f;--amber-bg:#392a12;
-    --gray-chip-bg:#26292d;--gray-chip-text:#c6cad0;--purple-bg:#291f37;--teal-bg:#12312d;
+    --gray-chip-bg:#26292d;--gray-chip-text:#c6cad0;--purple-bg:#291f37;--teal-bg:#12312d;--row-bg:#24272b;
     --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
     --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   }
@@ -112,12 +112,20 @@
   .pct-row .pct-sub{font-size:12.5px;color:var(--text-muted);}
   .bar-track{height:8px;background:var(--gray-chip-bg);border-radius:99px;margin-top:10px;overflow:hidden;}
   .bar-fill{height:100%;background:var(--green);border-radius:99px;}
-  .idea-list{margin-top:16px;display:flex;flex-direction:column;gap:9px;max-height:260px;overflow-y:auto;}
-  .idea-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--bg);border-radius:12px;border:1px solid var(--border);text-decoration:none;color:inherit;transition:border-color .12s;}
+  .idea-list{
+    margin-top:16px;display:flex;flex-direction:column;gap:9px;max-height:260px;overflow-y:auto;padding-right:4px;
+    scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  }
+  .idea-list::-webkit-scrollbar{width:6px;}
+  .idea-list::-webkit-scrollbar-track{background:transparent;}
+  .idea-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+  .idea-list::-webkit-scrollbar-thumb:hover{background:var(--text-muted);}
+  .idea-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--row-bg);border-radius:12px;border:1px solid var(--border);text-decoration:none;color:inherit;transition:border-color .12s;}
   .idea-row:hover{border-color:var(--blue);}
   .idea-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
   .idea-name{font-size:13px;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .idea-age{font-size:10.5px;color:var(--text-muted);opacity:.85;}
+  .idea-age{font-size:11px;color:var(--text-muted);}
+  .idea-age .age-days{font-size:9.5px;opacity:.65;margin-left:1px;}
   .idea-tags{display:flex;align-items:center;gap:6px;flex-shrink:0;}
   .chip{padding:3px 8px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;}
   .chip.gray{background:var(--gray-chip-bg);color:var(--gray-chip-text);}
@@ -229,13 +237,15 @@ function chipClassAndLabel(idea){
   return {cls:"gray", label: idea.status || "Topics"};
 }
 
-// How long ago the idea card was created — separate from the 7-day
-// check-by countdown, since Ronath wants raw age visible too.
-function ageLabel(createdIso, asOfDate){
-  const days = Math.floor((asOfDate - new Date(createdIso)) / 86400000);
-  if(days <= 0) return "today";
-  if(days === 1) return "1d ago";
-  return days + "d ago";
+// When the idea card was created — separate from the 7-day check-by
+// countdown, since Ronath wants to see the actual add date, with the
+// day count as a smaller secondary detail rather than the headline.
+function addedInfo(createdIso, asOfDate){
+  const created = new Date(createdIso);
+  const days = Math.floor((asOfDate - created) / 86400000);
+  const dateStr = created.toLocaleDateString(undefined, {day:"numeric", month:"short", year:"numeric"});
+  const daysStr = days <= 0 ? "today" : (days === 1 ? "1d" : days + "d");
+  return {dateStr, daysStr};
 }
 
 let REPORT = null;
@@ -313,10 +323,11 @@ function render(){
       else if(i.executed) dayHtml = `<span class="daychip left">done</span>`;
       else if(i.daysLeft < 0) dayHtml = `<span class="daychip over">${Math.abs(i.daysLeft)}d overdue</span>`;
       else dayHtml = `<span class="daychip left">${i.daysLeft}d left</span>`;
+      const added = addedInfo(i.created, asOf);
       return `<a class="idea-row" href="${i.url}" target="_blank" rel="noopener noreferrer">
         <div class="idea-main">
           <div class="idea-name" title="${i.name}">${i.name}</div>
-          <div class="idea-age">Added ${ageLabel(i.created, asOf)}</div>
+          <div class="idea-age">Added ${added.dateStr} <span class="age-days">· ${added.daysStr}</span></div>
         </div>
         <div class="idea-tags"><span class="chip ${ch.cls}">${ch.label}</span>${dayHtml}</div>
       </a>`;
