@@ -7,43 +7,84 @@
 <style>
   :root{
     --bg:#f5f6f8; --card-bg:#ffffff; --text:#14171a; --text-muted:#6b7280; --border:#e6e8eb;
+    --header-bg: rgba(255,255,255,.72);
     --blue:#2f6fed; --blue-bg:#eaf1fe; --green:#16a34a; --green-bg:#eafbf0;
     --red:#dc2626; --red-bg:#fdecec; --amber:#b45309; --amber-bg:#fef3e2;
     --gray-chip-bg:#eef0f2; --gray-chip-text:#4b5563; --purple:#7c3aed; --purple-bg:#f3ecfd;
     --teal:#0d9488; --teal-bg:#e6f7f5;
     --shadow:0 1px 2px rgba(16,24,40,.04), 0 4px 10px rgba(16,24,40,.05);
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); box-sizing:border-box;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#101214; --card-bg:#181b1f; --text:#f2f3f5; --text-muted:#9aa1ab; --border:#2a2e33;
+      --header-bg: rgba(20,22,25,.65);
       --blue-bg:#182842; --green-bg:#122a1c; --red-bg:#331515; --amber-bg:#332108;
       --gray-chip-bg:#25282c; --gray-chip-text:#c2c7cd; --purple-bg:#241a38; --teal-bg:#0c2725;
       --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.35);
+      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
   }
   :root[data-theme="dark"]{
     --bg:#101214;--card-bg:#181b1f;--text:#f2f3f5;--text-muted:#9aa1ab;--border:#2a2e33;
+    --header-bg: rgba(20,22,25,.65);
     --blue-bg:#182842;--green-bg:#122a1c;--red-bg:#331515;--amber-bg:#332108;
     --gray-chip-bg:#25282c;--gray-chip-text:#c2c7cd;--purple-bg:#241a38;--teal-bg:#0c2725;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.35);
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   }
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
-  header.topbar{display:flex;align-items:center;gap:14px;padding:14px 24px;padding-top:calc(14px + env(safe-area-inset-top,0px));background:var(--card-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;flex-wrap:wrap;}
-  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;white-space:nowrap;}
-  .logo .mark{width:16px;height:16px;background:var(--text);border-radius:4px;transform:rotate(45deg);}
+
+  header.topbar{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:12px 24px;padding-top:calc(12px + env(safe-area-inset-top,0px));
+    background:var(--header-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:11px;}
+  .logo-badge{
+    width:34px;height:34px;border-radius:10px;background:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    box-shadow:0 0 0 1px var(--border), 0 2px 5px rgba(0,0,0,.10);
+  }
+  .logo-badge img{width:24px;height:24px;object-fit:contain;display:block;}
+  .wordmark{display:flex;flex-direction:column;line-height:1.15;}
+  .wordmark .name{font-weight:800;font-size:15.5px;letter-spacing:-0.01em;}
+  .wordmark .tag{font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;}
+  .v-divider{width:1px;height:26px;background:var(--border);margin:0 2px;flex-shrink:0;}
+
   nav.tabs{display:flex;gap:4px;background:var(--gray-chip-bg);padding:4px;border-radius:10px;}
   nav.tabs button{border:none;background:transparent;padding:7px 14px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--text-muted);cursor:pointer;}
   nav.tabs button.active{background:var(--blue);color:#fff;}
+
   .spacer{flex:1;}
-  input#search{border:1px solid var(--border);background:var(--bg);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--text);min-width:160px;}
-  .snapshot-pill{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted);background:var(--gray-chip-bg);padding:6px 10px;border-radius:999px;white-space:nowrap;}
-  .snapshot-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
-  .snapshot-pill.stale .dot{background:var(--amber);}
-  .refresh-btn{border:1px solid var(--border);background:var(--card-bg);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:14px;}
-  .refresh-btn:disabled{opacity:.5;cursor:default;}
+
+  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  select#clientSelect{
+    height:34px;border:1px solid var(--border);background:var(--bg);color:var(--text);
+    border-radius:9px;padding:0 30px 0 12px;font-size:13px;font-family:inherit;
+    appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:var(--chevron);background-repeat:no-repeat;background-position:right 8px center;background-size:16px;
+    max-width:180px;
+  }
+  select#clientSelect:focus{outline:2px solid var(--blue);outline-offset:1px;}
+
+  .snapshot-pill{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted);background:var(--gray-chip-bg);padding:0 12px;height:34px;border-radius:999px;white-space:nowrap;}
+  .snapshot-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
+
+  .icon-btn{
+    border:1px solid var(--border);background:var(--card-bg);border-radius:9px;
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    color:var(--text-muted);flex-shrink:0;transition:background .12s,color .12s;
+  }
+  .icon-btn:hover{background:var(--gray-chip-bg);color:var(--text);}
+  .icon-btn:disabled{opacity:.5;cursor:default;}
+  .icon-btn svg{width:16px;height:16px;}
+
   main{max-width:1180px;margin:0 auto;padding:20px 24px 60px;}
   .banner{display:flex;flex-direction:column;gap:10px;background:var(--red-bg);border:1px solid rgba(220,38,38,.25);border-radius:14px;padding:14px 18px;margin-bottom:20px;}
   .banner-title{font-weight:700;font-size:14.5px;color:var(--red);}
@@ -106,15 +147,36 @@
 <body>
 
 <header class="topbar">
-  <div class="logo"><span class="mark"></span> editoz.club <span style="font-weight:500;color:var(--text-muted);font-size:13px;">/ strategy ideas</span></div>
+  <div class="brand">
+    <div class="logo-badge">
+      <img id="logoImg" alt="editoz.club" />
+    </div>
+    <div class="wordmark">
+      <span class="name">editoz.club</span>
+      <span class="tag">Strategy Ideas</span>
+    </div>
+  </div>
+
+  <div class="v-divider"></div>
+
   <nav class="tabs">
     <button class="active" data-view="overview">Overview</button>
     <button data-view="bottleneck">Bottleneck</button>
   </nav>
-  <input id="search" placeholder="Filter clients…" />
+
+  <select id="clientSelect">
+    <option value="">All clients</option>
+  </select>
+
   <div class="spacer"></div>
-  <div class="snapshot-pill" id="snapshotPill"><span class="dot"></span> <span id="snapshotText">Loading…</span></div>
-  <button class="refresh-btn" id="refreshBtn" title="Re-pull from Notion now">⟳</button>
+
+  <div class="controls">
+    <div class="snapshot-pill" id="snapshotPill"><span class="dot"></span> <span id="snapshotText">Loading…</span></div>
+    <button class="icon-btn" id="themeBtn" title="Toggle light / dark"></button>
+    <button class="icon-btn" id="refreshBtn" title="Re-pull from Notion now">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </button>
+  </div>
 </header>
 
 <main id="main">
@@ -122,6 +184,39 @@
 </main>
 
 <script>
+// ---------- logo (embedded so the page has no external asset dependency) ----------
+document.getElementById("logoImg").src =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wgARCADIAMgDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBQYBAwkEAv/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAbUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANbwZIDWtkOQAAAAAAAAOnujU/UPY3WzGxjYSWihm1WiqsWGsp5hZg9PFd7DH6AAOk7nHIAA45r2aLWrb5wKvrl4kqUl+JCR7ZUC7SwleLPycUQlDXtQPQqSvKveD0cUg+Qu9V+uNki1AAAFf7AVTN+r5Dg3LNRmLWyv595QlGGrhZopHu+I18vfqtOpLOnQLdb2UG3K5mqGPlupVvDbQAAar5tXi/JXSXbOit2jXKHmNhPUevZTyTNc1Yv/ENYpyIcxl+PhKKrZ8lS9wt7KppUjgAABjckAAAHTCM6ChMVepfyHltmvQXkptLVmfqI8kMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/xAAnEAABBQEAAgEDBAMAAAAAAAAFAgMEBgcBACAQERZAEhMVcBchMf/aAAgBAQABBQL+t5dlEwO/f9e/VEswmd38N55LCCZGwS/Cuf2835NyexROTxUwU54KtJYIqv7R/sYXhmY34Fh0ENXFT9ulKV/mQ99YO3S0qG6DXLS3Y8fgT0m69Pr0nwWXmBZVS1uKS8Srik+rzyI7P/fbvfp5f9PclOd79fWs6AVrPRFnBaBBuGTSBvnedT3yq6CTq/a7oIexc+ZcxiAxY7792F/bW7WoUPB1ErYuj8ReUnmJivpMxBjvDOWHRPFoU0vxp1bDlP11TflloQq5x7DVSVZf+Bd2Nh0tbIebTK12wyEkjM4w5kVOcbc9oNG5Zj1i00TWuE9XPz1KuR1aoWkWKD0HtfO9lCq7oUK2ZiRrvzWrgSqzwHQAlvj2HG4czpXPjwjrjLjKuJ6roqmmTKqpkMceuAfZLFPbUL+4h31HE5QiVUddYneWvL4FgSZAzq/K+AOhmgHBe1wneN6RWJqfv2qxuEtmERkkLqfvcyrV5msBvW0mP4GvrWp5wFmBs2mLh8fiXcRH94TxYjH4UCTgj3xVb+SqyhdlAaBCsuNOI8IDJYp/0r1UJWZ+nUmJUYvtrv7iqrRc4jV9n0lwmCDFjxuLK8N1gnXnfELU2uu62TFcg3es2xifk9fI+PYc13rGHs87BzCuBUwVM9Z95kBucr3eZbkNnsiEk/DGWnRXX4zsVzyCaIDPIWgWp1QqHoBvwRTI8Ff4ciIxMQ7SgL3WqWCZ7HisxEf1v//EABQRAQAAAAAAAAAAAAAAAAAAAHD/2gAIAQMBAT8BKf/EABQRAQAAAAAAAAAAAAAAAAAAAHD/2gAIAQIBAT8BKf/EAEQQAAEDAQIHDAYJAwUAAAAAAAIBAwQABRESEyEiMUFREBQgQlJhcYGRobHRIyQyQ3LBFTAzQFNUYmNwkuHwRHOChNL/2gAIAQEABj8C/je6RaUVothOpfWD9LR7+mro9pRXV2C6l/3TCNbk7aULIs5tgfzM87uwEy9tKsy2GXb/AHeMJB7EG6lUY7clP2XU+d1YuZFdjFscC7cTec55pE4l949i5KFq2I3/AGI/zGkfhSAkNbQXR0/cVbefx8lPcMZxJ07KXeVnMtjtfJS8Lq9iH0YpfOk35ZzLibWSUfG+t7SFFoj9xNFLl69FE9ZTm8nly4tcrS+VYidHJktRcUuhdxJEKQcd1NYrp6dtBGtZBhyNCPJ9mXlSKi3ouhU4RuuLgtgmESrqT6hyz7HdxcdM1ySGk/h5uEINu75ifl3sqdWyliugCuKmfEf9rq80o5VkYUuNpVj3gdG2rlyLuI2Jb6ha47q6PhXVQi3ISPJX3D+avVt4BPSXgYaHSbi3JUOxLJv3o6+Auva3Ev8ADhjZcY8GRKS9xU4rf969SiEbet0s0E66RZ1pA2vJYDC71rLOmX/8fKl3rajgrsebv8KUwZGc0nGjLevZppRMVEk0ourcFxslAxW9CFblSgiW3njoSWKZU+JPnW/YhgzJNLxks5Rc6dtYuawohxXhygXQu6gxrRdRtOIeePfVxBEc5yaX5LVwOMR+dprzvrGTZbskv3Cvur6blt4OS6MJd5cOTbtsphMuH6tFXkJ7Kl5VvSGCTH283FM5rYdflS4p8IQclgPmtXra0y/mdWs20TdTkvIh+NC3asPB/ejf+VrGjipC/js5HA/zno32L50FOOCZwfEm7hRHb2VXPYPKBVvSWgMPHkKNJyiXQuuidsp/eZ/guZweaUuMgG8Ce8j56d1YJgQLsJLqyJfSb2s95RX3hjgD2rQSbXMZbqZUYH7NOnbTkSz1RyPET07w+zhagHhuWNZzmBg5JDw6fgT58IZEN847w8YFoItsoMZ7Qkkfsy6dlLLs0ghyizs37Jz/ADalYidHJk9S6i6F3RBuTvhhPcyM5PNKRJ8F2OXKZXDT5VnzQTmdaLyrCGcwn+20vlSpEZfmH0YA9/lQWdF9A28uCjDGS/4lpmE1nEmVw+WWteFNncZtvM+Jcid9EZKpmS3qq61oXFZSEwvHkZO7TXrNqOGv7TaD516O0ZIr+oRWlKFLZmfpNMWXlWKnRXIx/rTIvQu6gAW+YeuM4uTq2UsZwQM1TOiSPaTo/tRPWK7jB/LPLl6i86VmZHcjuclwbuDgQmFUOM8WQB66zPTTDT0khU7k2JwwaaRSJ6U2GCmvTTcuaAyLSXLlyi10c/PwSZksg+0WkHBvSidsh7ejn4LuUO3SlYE6KbSanNIL17iEBKJJlRU1ULU5PpFhNZrc4nXr66Rh82kUv9POFE8clYbIOxL9cdzJ3316K1jFP1s3/OvTWq4SbAZu+dY6QCyMHKpy3M1PBKQYzeBHRM3BHBHq+ojK6l+Idxwpz3KieP1BNugLjZaRNL0WiOGpWc8vIzg/ppVBhJzSceOt6/06aUHmjaNOKY3LueqTX4/M24qUjUea9IPkoyJr4UiyJy2cwvGcERLsRL6F+bIfteYmVHpZYSD8I6E+6YL7Lbw7HBvq8rJiX8zSJV42TEv52kWsBhkGR2Njd/HH/8QAKhABAAECBQMDBAMBAAAAAAAAAREAITFBUWFxgZGhECCxwdHw8TBA4XD/2gAIAQEAAT8h/wCbLBLYpCRYl9kzXlhKO8RQZJw8WmaESS5/TTxDQU7AXXYqXV4A65H4WpoX/wAPnhQgtnI7SVpUVU+Jx9HT82+fClgMYQYbp9HpTZ9rFaDEdn+i4y1REbpjqZosyEx7UY6xRmme1vajCBhG4lL7zWEix363ok2pOsbw64D6be4ENBgNmnEvqXvr8blAmNKJE9xKW8CAlaGA6+4AqwGK01ySlD5iy3Z8YolWVzfa1AG7Im/HpttUyxUOG7z7nFW8G6uHw+eacggwjiel96ZJ5Hx2rEeIxLuw6PYfwpJLq0kSvUiFkDI4usaY+6cw6V8COqTgaxv6PKG3QrPShvwPij3XUJKq2Ugnuj4q7ZCQRzDsGnGPA4VuelwDxg1Gm5tv78rhfZo5Y2/hTyxpWsMflZo39cPJDgcE46UMR6Q+GlUzNR50j62Eo4GB0qRIrKuz9Gxy7e5YJbFIDuiibXJAeV9KfHaCkHJjHQPSpYLgCfI101R/DRNF5MeonzQMw2Wsc/QelNGhwJxnPoKAHdG3vxuW49cUsPDGTuXqAH7Wvet4O1KUe9xeH7laT9E5rmOoUwG8UoqIInIKCf1okK1E8m73xsc1vMaOs7PNUwgM7e1JIblM3F2xLUy/TX3YcUIk7Ops1IEbBHBz74cUPw4N8maGE/4NPM9oktcJPXLzOQzQfgazQ0N2WR5oZcMu+yr8vk+K5WPse/dQusaODNxUDHA2qFMNrdf0Gwe6JonXfkyKbke4KYtXKkjrTb6wUW1KCeWiPcYPa1HzDOJxd8itKifZB6et7+3qHPP42qYpYANrr58KZz0tDthPZzQgfmJca9PaJL2O/f0F6fDiiKXZ/Zn77erFlnIDqFGiMt8H8mnttRuAbo1d0bzL8fcVMm2COhNvR1jycK1Gj221ovy+qsUHlybNzo0euLyR2wdq4KEV3DUt0Wn3VWVyzdQPJRy71kTbpvh/BHcmgtHtF3T+AWKQaDcaxNmtleTbolf77yQ+A1jZmUXR9HZ2NPYYp8IwQ/NoXGcj3bzkVdOiNGqPyO/9TbHdPZpDPM/iKPxzP5itmCw9j/nH/9oADAMBAAIAAwAAABDzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzjTTzzzzzzzzyxwDizTzzjzzzyzjiyySzxBzzxTyxhzTzwBDzzwzzziwTDSjzzzxzzzwwzjTzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/8QAFBEBAAAAAAAAAAAAAAAAAAAAcP/aAAgBAwEBPxAp/8QAFBEBAAAAAAAAAAAAAAAAAAAAcP/aAAgBAgEBPxAp/8QAKRABAAEEAgEFAAEEAwAAAAAAAREAITFhQVFxECCBkaFAMHDB0bHh8P/aAAgBAQABPxD+2wMgBKuCphEw9jP/AFKSPcf+OfNWnnq29f6lGkEJEZE/hrPwhz6ZVwCvVF2DVRNEaYtr1vW6QXoAUkCeqiNTngGpAH+l0AGySsUw0pE38zFL3KjUOxX7XxVjebNiEyfhA6/gqbB6EqA2g0oa4Ub5wqkdS1/gwP8AP9qSBwC52IV+SiZcms9I0JC6qF8FWreDM/a6KNixnIzh2fDJyD6RseGNKmb8ASoQRy5gZqttc+AoM/iiRIiWROfc7+OoRIegFoxMCSfcDYyogDtpevcGkLc7kb8UoRs6VJV7faL03cgLqfplVA2eYUL21t4QGUoFfRu8sx6I9XNIvcPCGRHD6Qiq4Upu3EzYm6VN6AkYaU0fHNewoZPWAJ4p7QJ1lpL3RcwNkiFG/ESKBBBj3KLjDp6g8JSfpGi6VtlXMwpNjqlEEmONTViSB3lzwv8A5oQDzm0xPmVA01QyduHXkUsTD8zIlxOn0G350OyAREeSufGnBggx07XGvBxSGTY6RQ8rEUpAcxuwxMXsDkPQYZLNDqyD16EB8KABcqnmB+VbMZBTsYDRtBLeHvh0ApVE7yZiFuF3eJiT7QZACVcBTmuLgwmhCE4lTk0k8QFVgZCNRENB9WbLHEnPsTxTSWM2X6A/KYRhIt6UH4DSEyEDsUsdq6pHgU+9LWQx3jVTYlaGTYlgO+yXh6n0nTfbb8XOWEyWoeP4DDgRewN3HKpR6xl+p4fr0FPrUx4kJFUU1cLBsQSgj+gUq+Cl6WQgR5vh4V1SFTDmJeYDHSxcFD+4AGAgLIizASVvuAwCEI4aI0zOzmLAwi68Yl7V1dc2JlHDcgjyUlArOBgvKnSc5jUeq5CxJIzlOByozU31Nmbi/Sbcw29MUvOMDGdoDoA1Vn5RHvKqLRSSNF1hpl/qpOdsKfxNRCAXkHbNRKJEw5TzR4ItHkgHgGSasBwDj3A0s3goC6u9TS8ZOVko5VVfmgOmdrcYrSB7pEfljGhc+YKGo/Yw+A/2hs3JopJT5qaTQkwj5CT2k9WIpNMU3b7kxKWVVYDKea7TjdHk5lai634vcEdASb0nRW6QcpIG0ntDakBJyuQpm8uCjkWoo3zIXiZsUwB7kPpLFA8ZWOVK/iAlJibI57EQLvsOiH04hJ3kqQiZK/1e+WOilX6YEubqZOQ9AyfXmXAXE7KjgcfAoifAr0qBnRcvxIbqVoYT37zhDg1ApKzxgmOLA/VD5IJRDmxn1SggcCXIofBofVg/goQmNwEpIX+gHGckTo+Uex/QYvhozIBE800vjDyIB+EOqmn8ltbgn4G6SJkPZsBPQWN5TfMx8lJeiP2iFXFDysZhZa+ek1Gdg+S7hscfxDRg/wBbqUzGksj+pQc94gf1aPg8B9Xof24//9k=";
+
+// ---------- theme toggle ----------
+const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+function getStoredTheme(){ try{ return localStorage.getItem("theme"); }catch(e){ return null; } }
+function setStoredTheme(v){ try{ localStorage.setItem("theme", v); }catch(e){} }
+
+function currentEffectiveTheme(){
+  const explicit = document.documentElement.getAttribute("data-theme");
+  if(explicit) return explicit;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+function updateThemeBtn(){
+  const eff = currentEffectiveTheme();
+  document.getElementById("themeBtn").innerHTML = eff === "dark" ? SUN : MOON;
+}
+(function initTheme(){
+  const stored = getStoredTheme();
+  if(stored) document.documentElement.setAttribute("data-theme", stored);
+  updateThemeBtn();
+})();
+document.getElementById("themeBtn").addEventListener("click", ()=>{
+  const next = currentEffectiveTheme() === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  setStoredTheme(next);
+  updateThemeBtn();
+});
+
+// ---------- data ----------
 function initials(name){ return name.split(" ").filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
 
 function chipClassAndLabel(idea){
@@ -134,7 +229,7 @@ function chipClassAndLabel(idea){
 
 let REPORT = null;
 let currentView = "overview";
-let filterText = "";
+let selectedClient = "";
 
 async function load(force){
   const btn = document.getElementById("refreshBtn");
@@ -152,15 +247,24 @@ async function load(force){
   }
 }
 
+function populateClientDropdown(allClients){
+  const sel = document.getElementById("clientSelect");
+  const prev = sel.value;
+  sel.innerHTML = `<option value="">All clients</option>` +
+    allClients.slice().sort((a,b)=>a.name.localeCompare(b.name))
+      .map(c=>`<option value="${c.name}">${c.name}</option>`).join("");
+  if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+}
+
 function render(){
   if(!REPORT) return;
   const pill = document.getElementById("snapshotPill");
   const asOf = new Date(REPORT.asOf);
   document.getElementById("snapshotText").textContent = "Live · pulled " + asOf.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  pill.classList.remove("stale");
 
   const allClients = REPORT.clients.filter(c => c.stats.suggested > 0);
-  const visibleClients = allClients.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
+  populateClientDropdown(allClients);
+  const visibleClients = selectedClient ? allClients.filter(c=>c.name===selectedClient) : allClients;
   const allIdeas = allClients.flatMap(c => c.ideas.map(i => ({...i, client:c.name})));
 
   let html = "";
@@ -286,7 +390,7 @@ function render(){
 document.querySelectorAll("nav.tabs button").forEach(btn=>{
   btn.addEventListener("click", ()=>{ currentView = btn.dataset.view; render(); });
 });
-document.getElementById("search").addEventListener("input", (e)=>{ filterText = e.target.value; render(); });
+document.getElementById("clientSelect").addEventListener("change", (e)=>{ selectedClient = e.target.value; render(); });
 document.getElementById("refreshBtn").addEventListener("click", ()=>load(true));
 
 load(false);
