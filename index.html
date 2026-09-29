@@ -118,7 +118,33 @@
   .status-pill{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;flex-shrink:0;}
   .status-pill.risk{background:var(--red-bg);color:var(--red);}
   .status-pill.ontrack{background:var(--green-bg);color:var(--green);}
+  .status-pill.watch{background:var(--amber-bg);color:var(--amber);}
   .status-pill.empty{background:var(--gray-chip-bg);color:var(--gray-chip-text);}
+
+  .podium-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:18px;}
+  .podium-card{background:var(--card-bg);border:1px solid var(--border);border-radius:18px;padding:22px 18px 18px;box-shadow:var(--shadow);text-align:center;position:relative;}
+  .podium-rank{position:absolute;top:14px;left:14px;font-size:15px;}
+  .podium-avatar{width:60px;height:60px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin:4px auto 12px;}
+  .podium-name{font-weight:700;font-size:15px;}
+  .podium-pct{font-size:32px;font-weight:700;margin-top:10px;}
+  .podium-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+  .podium-sub{font-size:11.5px;color:var(--text-muted);margin-top:10px;line-height:1.5;}
+
+  .perf-list{display:flex;flex-direction:column;gap:8px;}
+  .perf-row{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow);flex-wrap:wrap;}
+  .perf-rank{width:22px;text-align:center;font-weight:700;color:var(--text-muted);font-size:13px;flex-shrink:0;}
+  .perf-po{font-weight:700;font-size:13.5px;flex:1 1 130px;min-width:100px;}
+  .perf-clients{font-size:11.5px;color:var(--text-muted);flex:0 0 auto;white-space:nowrap;}
+  .perf-bar-wrap{flex:1 1 130px;min-width:110px;display:flex;align-items:center;gap:8px;}
+  .perf-bar-track{height:7px;background:var(--gray-chip-bg);border-radius:99px;overflow:hidden;flex:1;}
+  .perf-bar-fill{height:100%;border-radius:99px;background:var(--blue);}
+  .perf-pct-num{font-weight:700;font-size:13.5px;width:38px;text-align:right;flex-shrink:0;}
+  .perf-delta{padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;flex-shrink:0;white-space:nowrap;}
+  .perf-delta.up{background:var(--green-bg);color:var(--green);}
+  .perf-delta.down{background:var(--red-bg);color:var(--red);}
+  .perf-delta.flat{background:var(--gray-chip-bg);color:var(--text-muted);}
+  .perf-spark{flex-shrink:0;}
+  .perf-note{font-size:12px;color:var(--text-muted);margin:0 0 14px;}
   .pct-row{display:flex;align-items:baseline;gap:8px;margin-top:14px;}
   .pct-row .pct{font-size:30px;font-weight:700;}
   .pct-row .pct-sub{font-size:12.5px;color:var(--text-muted);}
@@ -184,6 +210,7 @@
   <nav class="tabs">
     <button class="active" data-view="overview">Overview</button>
     <button data-view="bottleneck">Bottleneck</button>
+    <button data-view="performance">Performance</button>
   </nav>
 
   <select id="clientSelect">
@@ -258,6 +285,34 @@ function addedInfo(createdIso, asOfDate){
   const dateStr = created.toLocaleDateString(undefined, {day:"numeric", month:"short", year:"numeric"});
   const daysStr = days <= 0 ? "today" : (days === 1 ? "1d" : days + "d");
   return {dateStr, daysStr};
+}
+
+// Small inline trend line for a PO's rolling weekly on-time rate.
+// trend is oldest→newest, values 0–100 or null where no ideas were due that week.
+function sparkline(trend){
+  const w=64, h=22, pad=2;
+  const pts = trend.map((v,i)=>({v,i})).filter(p=>p.v!==null);
+  if(pts.length < 2){
+    const only = pts[0];
+    const cx = only ? pad + (only.i/(trend.length-1||1))*(w-2*pad) : w/2;
+    const cy = only ? (h-pad-(only.v/100)*(h-2*pad)) : h/2;
+    return `<svg class="perf-spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><circle cx="${cx}" cy="${cy}" r="2.5" fill="#9099ab"/></svg>`;
+  }
+  const x = i => pad + (i/(trend.length-1))*(w-2*pad);
+  const y = v => h-pad-(v/100)*(h-2*pad);
+  const line = pts.map(p=>`${x(p.i)},${y(p.v)}`).join(" ");
+  const last = pts[pts.length-1];
+  return `<svg class="perf-spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polyline points="${line}" fill="none" stroke="#3d6fe0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${x(last.i)}" cy="${y(last.v)}" r="2.5" fill="#3d6fe0"/>
+  </svg>`;
+}
+
+function tierTag(pct){
+  if(pct === null) return {cls:"empty", label:"No data"};
+  if(pct >= 70) return {cls:"ontrack", label:"On track"};
+  if(pct < 40) return {cls:"risk", label:"Needs focus"};
+  return {cls:"watch", label:"Watch"};
 }
 
 let REPORT = null;
@@ -381,6 +436,42 @@ function render(){
     <div class="bn-panels">
       <div class="panel"><h3>WHERE ALL IDEAS STAND</h3><div id="donutWrap" style="display:flex;justify-content:center;"></div><div id="donutLegend"></div></div>
       <div class="panel"><h3>OVERDUE IDEAS BY CLIENT</h3><div id="severity"></div></div>
+    </div>
+  </section>`;
+
+  const perf = REPORT.performance || [];
+  const top3 = perf.slice(0,3);
+  const medal = ["🥇","🥈","🥉"];
+  html += `<section class="view ${currentView==='performance'?'active':''}" id="view-performance">
+    <p class="perf-note">Ranked by overall delivery % across each PO's clients. The trend line shows their on-time rate for ideas due in each of the last 6 rolling weeks — new POs or early weeks will look sparse until more history builds up.</p>
+    <div class="podium-row">
+      ${top3.map((p,idx)=>{
+        const tag = tierTag(p.pct);
+        return `<div class="podium-card">
+          <div class="podium-rank">${medal[idx]}</div>
+          <div class="podium-avatar">${initials(p.po)}</div>
+          <div class="podium-name">${p.po}</div>
+          <span class="status-pill ${tag.cls}">${tag.label}</span>
+          <div class="podium-pct">${p.pct==null?'—':p.pct+'%'}</div>
+          <div class="podium-label">Portfolio delivery</div>
+          <div class="podium-sub">${p.clientsOnTrack}/${p.clientsTotal} clients on track<br/>${p.executed}/${p.suggested-p.excluded} ideas executed</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="perf-list">
+      ${perf.map((p,idx)=>{
+        return `<div class="perf-row">
+          <div class="perf-rank">${idx<3?medal[idx]:'#'+(idx+1)}</div>
+          <div class="perf-po">${p.po}</div>
+          <div class="perf-clients">${p.clientsOnTrack}/${p.clientsTotal} clients on track</div>
+          <div class="perf-bar-wrap">
+            <div class="perf-bar-track"><div class="perf-bar-fill" style="width:${p.pct||0}%"></div></div>
+            <div class="perf-pct-num">${p.pct==null?'—':p.pct+'%'}</div>
+          </div>
+          ${sparkline(p.trend)}
+          ${p.delta===null ? `<span class="perf-delta flat">–</span>` : p.delta>0 ? `<span class="perf-delta up">▲${p.delta}pp</span>` : p.delta<0 ? `<span class="perf-delta down">▼${Math.abs(p.delta)}pp</span>` : `<span class="perf-delta flat">flat</span>`}
+        </div>`;
+      }).join("")}
     </div>
   </section>`;
 
