@@ -4,10 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Strategy Idea Tracker · editoz.club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f7f7f5; --card-bg:#ffffff; --text:#26282b; --text-muted:#767b84; --border:#e9e9e6;
-    --header-bg: rgba(255,255,255,.72);
+    --header-bg: rgba(255,255,255,.92);
     --blue:#3d6fe0; --blue-bg:#eef3fe; --green:#2f9e5b; --green-bg:#eaf7ef;
     --red:#d64545; --red-bg:#fbebeb; --amber:#b3690f; --amber-bg:#faf1e2;
     --gray-chip-bg:#f1f1ee; --gray-chip-text:#5b6068; --purple:#8457dd; --purple-bg:#f4f0fc;
@@ -18,25 +21,25 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#15171a; --card-bg:#1d2023; --text:#e8e9eb; --text-muted:#9297a0; --border:#2c3034;
-      --header-bg: rgba(23,25,28,.65);
-      --blue-bg:#1b2a44; --green-bg:#163326; --red-bg:#38201f; --amber-bg:#392a12;
-      --gray-chip-bg:#26292d; --gray-chip-text:#c6cad0; --purple-bg:#291f37; --teal-bg:#12312d; --row-bg:#24272b;
-      --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
-      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      --bg:#11131a; --card-bg:#181b24; --text:#eef0f4; --text-muted:#9099ab; --border:#272b36;
+      --header-bg: rgba(24,27,36,.94);
+      --blue-bg:#1b2740; --green-bg:#142e22; --red-bg:#34201f; --amber-bg:#362913;
+      --gray-chip-bg:#20232c; --gray-chip-text:#c3c8d2; --purple-bg:#241f36; --teal-bg:#11302c; --row-bg:#1f2330;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.35);
+      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239099ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
   }
   :root[data-theme="dark"]{
-    --bg:#15171a;--card-bg:#1d2023;--text:#e8e9eb;--text-muted:#9297a0;--border:#2c3034;
-    --header-bg: rgba(23,25,28,.65);
-    --blue-bg:#1b2a44;--green-bg:#163326;--red-bg:#38201f;--amber-bg:#392a12;
-    --gray-chip-bg:#26292d;--gray-chip-text:#c6cad0;--purple-bg:#291f37;--teal-bg:#12312d;--row-bg:#24272b;
-    --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
-    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    --bg:#11131a;--card-bg:#181b24;--text:#eef0f4;--text-muted:#9099ab;--border:#272b36;
+    --header-bg: rgba(24,27,36,.94);
+    --blue-bg:#1b2740;--green-bg:#142e22;--red-bg:#34201f;--amber-bg:#362913;
+    --gray-chip-bg:#20232c;--gray-chip-text:#c3c8d2;--purple-bg:#241f36;--teal-bg:#11302c;--row-bg:#1f2330;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.35);
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239099ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   }
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;}
 
   header.topbar{
     display:flex;align-items:center;gap:14px;flex-wrap:wrap;
@@ -52,7 +55,7 @@
   }
   .logo-badge img{width:24px;height:24px;object-fit:contain;display:block;}
   .wordmark{display:flex;flex-direction:column;line-height:1.15;}
-  .wordmark .name{font-weight:800;font-size:15.5px;letter-spacing:-0.01em;}
+  .wordmark .name{font-weight:700;font-size:15.5px;letter-spacing:-0.01em;}
   .wordmark .tag{font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;}
   .v-divider{width:1px;height:26px;background:var(--border);margin:0 2px;flex-shrink:0;}
 
@@ -108,7 +111,7 @@
   .status-pill.ontrack{background:var(--green-bg);color:var(--green);}
   .status-pill.empty{background:var(--gray-chip-bg);color:var(--gray-chip-text);}
   .pct-row{display:flex;align-items:baseline;gap:8px;margin-top:14px;}
-  .pct-row .pct{font-size:30px;font-weight:800;}
+  .pct-row .pct{font-size:30px;font-weight:700;}
   .pct-row .pct-sub{font-size:12.5px;color:var(--text-muted);}
   .bar-track{height:8px;background:var(--gray-chip-bg);border-radius:99px;margin-top:10px;overflow:hidden;}
   .bar-fill{height:100%;background:var(--green);border-radius:99px;}
@@ -375,7 +378,7 @@ function render(){
   document.getElementById("main").innerHTML = html;
 
   const segs = [
-    {label:"Not due yet", value: notDue, color:"#9297a0"},
+    {label:"Not due yet", value: notDue, color:"#9099ab"},
     {label:"Overdue, in progress", value: overdueInProgress, color:"#b3690f"},
     {label:"Overdue, not started", value: overdueStalled, color:"#d64545"},
     {label:"Published", value: published, color:"#2f9e5b"}
@@ -391,7 +394,7 @@ function render(){
   const donutWrap = document.getElementById("donutWrap");
   if(donutWrap){
     donutWrap.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">${arcs}
-      <text x="80" y="76" text-anchor="middle" font-size="26" font-weight="800" fill="var(--text)">${total}</text>
+      <text x="80" y="76" text-anchor="middle" font-size="26" font-weight="700" fill="var(--text)">${total}</text>
       <text x="80" y="94" text-anchor="middle" font-size="11" fill="var(--text-muted)">ideas</text></svg>`;
     document.getElementById("donutLegend").innerHTML = segs.map(s=>`<div class="legend-row"><span><span class="legend-dot" style="background:${s.color}"></span>${s.label}</span><b>${s.value}</b></div>`).join("");
   }
