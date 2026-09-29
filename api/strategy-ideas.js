@@ -10,18 +10,18 @@ const NOTION_VERSION = "2025-09-03";
 const PROJECT_TRACKER_DATA_SOURCE_ID = "b6b396fe-f0cf-4d7e-9845-e18c630c0ae7";
 const STAR = "\u{1F31F}"; // 🌟
 
-// Content Board "Status" options, bucketed. Adjust here if a client board
-// ever adds/renames a status — this is the only place that needs updating.
-const STATUS_BUCKET = {
-  "Topics": "gray",
-  "Need writing": "progress", "Writing": "progress", "Writing Review": "progress",
-  "Need filming": "progress", "Need editing": "progress", "Editing": "progress",
-  "Revision": "progress", "Edit Review": "progress", "QC Review": "progress",
-  "PO Review": "progress", "Client Review": "progress",
-  "Need posting": "almost",
-  "PUBLISHED": "published",
-  "On Hold": "excluded", "Do Not Progress": "excluded", "Backlog": "gray"
-};
+// Some client boards phrase their Status options slightly differently
+// (e.g. "Published" vs "PUBLISHED"). Classify by keyword instead of an
+// exact list, so this doesn't silently break per client.
+function classifyStatus(status) {
+  const s = (status || "").trim().toLowerCase();
+  if (!s) return "gray";
+  if (s.includes("do not progress") || s.includes("on hold")) return "excluded";
+  if (s.includes("publish")) return "published";
+  if (s.includes("posting")) return "almost";
+  if (s === "topics" || s === "backlog" || s === "not started") return "gray";
+  return "progress"; // any other production stage (writing/filming/editing/review/etc.)
+}
 
 // Simple in-memory cache so opening the dashboard a few times in a row
 // doesn't re-hit ~35 Notion queries every time. Resets on cold start.
@@ -120,7 +120,7 @@ function enrichIdea(raw, now) {
   const created = new Date(raw.created);
   const checkBy = new Date(created.getTime() + 7 * 86400000);
   const daysLeft = Math.round((checkBy - now) / 86400000);
-  const bucket = STATUS_BUCKET[raw.status] || "gray";
+  const bucket = classifyStatus(raw.status);
   const executed = bucket === "published";
   const excluded = bucket === "excluded";
   const overdue = !executed && !excluded && daysLeft < 0;
