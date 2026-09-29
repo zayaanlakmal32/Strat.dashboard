@@ -6,33 +6,33 @@
 <title>Strategy Idea Tracker · editoz.club</title>
 <style>
   :root{
-    --bg:#f5f6f8; --card-bg:#ffffff; --text:#14171a; --text-muted:#6b7280; --border:#e6e8eb;
+    --bg:#f7f7f5; --card-bg:#ffffff; --text:#26282b; --text-muted:#767b84; --border:#e9e9e6;
     --header-bg: rgba(255,255,255,.72);
-    --blue:#2f6fed; --blue-bg:#eaf1fe; --green:#16a34a; --green-bg:#eafbf0;
-    --red:#dc2626; --red-bg:#fdecec; --amber:#b45309; --amber-bg:#fef3e2;
-    --gray-chip-bg:#eef0f2; --gray-chip-text:#4b5563; --purple:#7c3aed; --purple-bg:#f3ecfd;
-    --teal:#0d9488; --teal-bg:#e6f7f5;
-    --shadow:0 1px 2px rgba(16,24,40,.04), 0 4px 10px rgba(16,24,40,.05);
-    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    --blue:#3d6fe0; --blue-bg:#eef3fe; --green:#2f9e5b; --green-bg:#eaf7ef;
+    --red:#d64545; --red-bg:#fbebeb; --amber:#b3690f; --amber-bg:#faf1e2;
+    --gray-chip-bg:#f1f1ee; --gray-chip-text:#5b6068; --purple:#8457dd; --purple-bg:#f4f0fc;
+    --teal:#159c8f; --teal-bg:#e9f7f5;
+    --shadow:0 1px 2px rgba(16,24,40,.03), 0 4px 12px rgba(16,24,40,.04);
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23767b84' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); box-sizing:border-box;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#101214; --card-bg:#181b1f; --text:#f2f3f5; --text-muted:#9aa1ab; --border:#2a2e33;
-      --header-bg: rgba(20,22,25,.65);
-      --blue-bg:#182842; --green-bg:#122a1c; --red-bg:#331515; --amber-bg:#332108;
-      --gray-chip-bg:#25282c; --gray-chip-text:#c2c7cd; --purple-bg:#241a38; --teal-bg:#0c2725;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.35);
-      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      --bg:#15171a; --card-bg:#1d2023; --text:#e8e9eb; --text-muted:#9297a0; --border:#2c3034;
+      --header-bg: rgba(23,25,28,.65);
+      --blue-bg:#1b2a44; --green-bg:#163326; --red-bg:#38201f; --amber-bg:#392a12;
+      --gray-chip-bg:#26292d; --gray-chip-text:#c6cad0; --purple-bg:#291f37; --teal-bg:#12312d;
+      --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
+      --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
   }
   :root[data-theme="dark"]{
-    --bg:#101214;--card-bg:#181b1f;--text:#f2f3f5;--text-muted:#9aa1ab;--border:#2a2e33;
-    --header-bg: rgba(20,22,25,.65);
-    --blue-bg:#182842;--green-bg:#122a1c;--red-bg:#331515;--amber-bg:#332108;
-    --gray-chip-bg:#25282c;--gray-chip-text:#c2c7cd;--purple-bg:#241a38;--teal-bg:#0c2725;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.35);
-    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    --bg:#15171a;--card-bg:#1d2023;--text:#e8e9eb;--text-muted:#9297a0;--border:#2c3034;
+    --header-bg: rgba(23,25,28,.65);
+    --blue-bg:#1b2a44;--green-bg:#163326;--red-bg:#38201f;--amber-bg:#392a12;
+    --gray-chip-bg:#26292d;--gray-chip-text:#c6cad0;--purple-bg:#291f37;--teal-bg:#12312d;
+    --shadow:0 1px 2px rgba(0,0,0,.25), 0 4px 14px rgba(0,0,0,.3);
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239297a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   }
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   *{box-sizing:border-box;}
@@ -86,18 +86,18 @@
   .icon-btn svg{width:16px;height:16px;}
 
   main{max-width:1180px;margin:0 auto;padding:20px 24px 60px;}
-  .banner{display:flex;flex-direction:column;gap:10px;background:var(--red-bg);border:1px solid rgba(220,38,38,.25);border-radius:14px;padding:14px 18px;margin-bottom:20px;}
+  .banner{display:flex;flex-direction:column;gap:10px;background:var(--red-bg);border:1px solid rgba(214,69,69,.22);border-radius:16px;padding:15px 18px;margin-bottom:20px;}
   .banner-title{font-weight:700;font-size:14.5px;color:var(--red);}
   .banner-chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .banner-chip{background:var(--card-bg);border:1px solid rgba(220,38,38,.2);border-radius:9px;padding:6px 10px;font-size:12.5px;}
+  .banner-chip{background:var(--card-bg);border:1px solid rgba(214,69,69,.18);border-radius:10px;padding:6px 10px;font-size:12.5px;}
   .banner-chip b{color:var(--red);}
-  .error-banner{background:var(--amber-bg);border:1px solid rgba(180,83,9,.25);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:var(--amber);}
+  .error-banner{background:var(--amber-bg);border:1px solid rgba(179,105,15,.22);border-radius:16px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:var(--amber);}
   .overall-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
-  .stat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px 18px;box-shadow:var(--shadow);min-width:130px;flex:1;}
-  .stat-card .num{font-size:26px;font-weight:700;}
-  .stat-card .label{font-size:12px;color:var(--text-muted);margin-top:2px;}
+  .stat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:15px 18px;box-shadow:var(--shadow);min-width:130px;flex:1;}
+  .stat-card .num{font-size:25px;font-weight:700;}
+  .stat-card .label{font-size:12px;color:var(--text-muted);margin-top:3px;}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;}
-  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow);}
+  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:18px;padding:19px;box-shadow:var(--shadow);}
   .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
   .client-id{display:flex;align-items:center;gap:10px;min-width:0;}
   .avatar{width:38px;height:38px;border-radius:50%;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13.5px;flex-shrink:0;}
@@ -112,12 +112,14 @@
   .pct-row .pct-sub{font-size:12.5px;color:var(--text-muted);}
   .bar-track{height:8px;background:var(--gray-chip-bg);border-radius:99px;margin-top:10px;overflow:hidden;}
   .bar-fill{height:100%;background:var(--green);border-radius:99px;}
-  .idea-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;}
-  .idea-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;background:var(--bg);border-radius:10px;border:1px solid var(--border);text-decoration:none;color:inherit;transition:border-color .12s;}
+  .idea-list{margin-top:16px;display:flex;flex-direction:column;gap:9px;max-height:260px;overflow-y:auto;}
+  .idea-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--bg);border-radius:12px;border:1px solid var(--border);text-decoration:none;color:inherit;transition:border-color .12s;}
   .idea-row:hover{border-color:var(--blue);}
-  .idea-name{font-size:13px;line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .idea-main{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+  .idea-name{font-size:13px;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .idea-age{font-size:10.5px;color:var(--text-muted);opacity:.85;}
   .idea-tags{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-  .chip{padding:3px 8px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap;}
+  .chip{padding:3px 8px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;}
   .chip.gray{background:var(--gray-chip-bg);color:var(--gray-chip-text);}
   .chip.progress{background:var(--blue-bg);color:var(--blue);}
   .chip.almost{background:var(--teal-bg);color:var(--teal);}
@@ -227,6 +229,15 @@ function chipClassAndLabel(idea){
   return {cls:"gray", label: idea.status || "Topics"};
 }
 
+// How long ago the idea card was created — separate from the 7-day
+// check-by countdown, since Ronath wants raw age visible too.
+function ageLabel(createdIso, asOfDate){
+  const days = Math.floor((asOfDate - new Date(createdIso)) / 86400000);
+  if(days <= 0) return "today";
+  if(days === 1) return "1d ago";
+  return days + "d ago";
+}
+
 let REPORT = null;
 let currentView = "overview";
 let selectedClient = "";
@@ -303,7 +314,10 @@ function render(){
       else if(i.daysLeft < 0) dayHtml = `<span class="daychip over">${Math.abs(i.daysLeft)}d overdue</span>`;
       else dayHtml = `<span class="daychip left">${i.daysLeft}d left</span>`;
       return `<a class="idea-row" href="${i.url}" target="_blank" rel="noopener noreferrer">
-        <div class="idea-name" title="${i.name}">${i.name}</div>
+        <div class="idea-main">
+          <div class="idea-name" title="${i.name}">${i.name}</div>
+          <div class="idea-age">Added ${ageLabel(i.created, asOf)}</div>
+        </div>
         <div class="idea-tags"><span class="chip ${ch.cls}">${ch.label}</span>${dayHtml}</div>
       </a>`;
     }).join("");
@@ -350,10 +364,10 @@ function render(){
   document.getElementById("main").innerHTML = html;
 
   const segs = [
-    {label:"Not due yet", value: notDue, color:"#9aa1ab"},
-    {label:"Overdue, in progress", value: overdueInProgress, color:"#b45309"},
-    {label:"Overdue, not started", value: overdueStalled, color:"#dc2626"},
-    {label:"Published", value: published, color:"#16a34a"}
+    {label:"Not due yet", value: notDue, color:"#9297a0"},
+    {label:"Overdue, in progress", value: overdueInProgress, color:"#b3690f"},
+    {label:"Overdue, not started", value: overdueStalled, color:"#d64545"},
+    {label:"Published", value: published, color:"#2f9e5b"}
   ].filter(s=>s.value>0);
   const total = segs.reduce((a,s)=>a+s.value,0) || 1;
   const r=64, cx=80, cy=80, circ=2*Math.PI*r;
@@ -379,7 +393,7 @@ function render(){
     const max = Math.max(1, ...shown.map(c=>c.count));
     sevEl.innerHTML = (shown.length ? shown.map(c=>`
       <div class="sev-row"><div class="sev-label"><span>${c.name}</span><span>${c.count}</span></div>
-      <div class="sev-bar-track"><div class="sev-bar-fill" style="width:${(c.count/max)*100}%; background:#dc2626"></div></div></div>
+      <div class="sev-bar-track"><div class="sev-bar-fill" style="width:${(c.count/max)*100}%; background:#d64545"></div></div></div>
     `).join("") : `<div style="color:var(--text-muted);font-size:13px;">Nothing overdue right now.</div>`)
     + (rest>0 ? `<div style="color:var(--text-muted);font-size:12px;margin-top:8px;">+${rest} more clients, all on track</div>` : "");
   }
