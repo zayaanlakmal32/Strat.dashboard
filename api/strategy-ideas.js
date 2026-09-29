@@ -5,6 +5,11 @@
 // Data source of truth: your existing "📊 Project Tracker" data source, which
 // already stores each client's "Content Board Data Source ID". No guessing,
 // no separate lookup table — this just reads what you already maintain.
+//
+// Performance tab: PO ranking + a 6-week rolling trend are computed fresh
+// from each idea's own Created time / Publish Date, both of which Notion
+// already stores permanently. No separate history database needed — the
+// "history" is just re-derived from the same live data every time.
 
 const NOTION_VERSION = "2025-09-03";
 const PROJECT_TRACKER_DATA_SOURCE_ID = "b6b396fe-f0cf-4d7e-9845-e18c630c0ae7";
@@ -127,6 +132,64 @@ function enrichIdea(raw, now) {
   return { ...raw, checkBy: checkBy.toISOString().slice(0, 10), daysLeft, bucket, executed, excluded, overdue };
 }
 
+// PO performance: aggregate each PO's clients, plus a 6-week rolling
+// on-time-delivery trend derived purely from each idea's own checkBy /
+// publishDate — no snapshot storage needed, it's recomputed fresh each time.
+const TREND_WEEKS = 6;
+
+function buildPerformance(clientReports, now) {
+  const withIdeas = clientReports.filter(c => c.stats.suggested > 0 && c.po);
+  const byPo = {};
+  withIdeas.forEach(c => {
+    const po = c.po;
+    if (!byPo[po]) byPo[po] = { po, clientsTotal: 0, clientsOnTrack: 0, suggested: 0, executed: 0, excluded: 0, ideas: [] };
+    const b = byPo[po];
+    b.clientsTotal += 1;
+    if (c.stats.overdue === 0) b.clientsOnTrack += 1;
+    b.suggested += c.stats.suggested;
+    b.executed += c.stats.executed;
+    b.excluded += c.stats.excluded;
+    b.ideas.push(...c.ideas);
+  });
+
+  const result = Object.values(byPo).map(b => {
+    const denom = b.suggested - b.excluded;
+    const pct = denom > 0 ? Math.round((b.executed / denom) * 100) : null;
+
+    // bucket[0] = 1 week ago, bucket[5] = 6 weeks ago
+    const buckets = new Array(TREND_WEEKS).fill(null).map(() => ({ total: 0, onTime: 0 }));
+    b.ideas.forEach(idea => {
+      if (idea.excluded) return;
+      const checkByDate = new Date(idea.checkBy);
+      const weeksAgo = Math.floor((now - checkByDate) / (7 * 86400000));
+      if (weeksAgo >= 1 && weeksAgo <= TREND_WEEKS) {
+        const slot = buckets[weeksAgo - 1];
+        slot.total += 1;
+        const onTime = idea.executed && (!idea.publishDate || new Date(idea.publishDate) <= checkByDate);
+        if (onTime) slot.onTime += 1;
+      }
+    });
+    const trend = buckets.slice().reverse().map(s => s.total > 0 ? Math.round((s.onTime / s.total) * 100) : null);
+    const nonNull = trend.filter(v => v !== null);
+    const delta = nonNull.length >= 2 ? nonNull[nonNull.length - 1] - nonNull[nonNull.length - 2] : null;
+
+    return {
+      po: b.po,
+      clientsTotal: b.clientsTotal,
+      clientsOnTrack: b.clientsOnTrack,
+      suggested: b.suggested,
+      executed: b.executed,
+      excluded: b.excluded,
+      pct,
+      trend,
+      delta
+    };
+  });
+
+  result.sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1));
+  return result;
+}
+
 async function buildReport() {
   const now = new Date();
   const clients = await getActiveClients();
@@ -160,6 +223,8 @@ async function buildReport() {
   const totalOverdue = withIdeas.reduce((a, c) => a + c.stats.overdue, 0);
   const denom = totalSuggested - totalExcluded;
 
+  const performance = buildPerformance(clientReports, now);
+
   return {
     asOf: now.toISOString(),
     overall: {
@@ -169,6 +234,7 @@ async function buildReport() {
       pct: denom > 0 ? Math.round((totalExecuted / denom) * 100) : null
     },
     clients: clientReports.sort((a, b) => b.stats.overdue - a.stats.overdue),
+    performance,
     errors
   };
 }
