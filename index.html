@@ -203,6 +203,28 @@
   .sev-label{font-size:12.5px;margin-bottom:4px;display:flex;justify-content:space-between;}
   .sev-bar-track{height:9px;background:var(--gray-chip-bg);border-radius:99px;overflow:hidden;}
   .sev-bar-fill{height:100%;border-radius:99px;}
+  .calls-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px;}
+  .calls-intro h2{font-size:22px;margin:0 0 5px;letter-spacing:-.02em;}
+  .calls-intro p{font-size:13px;color:var(--text-muted);line-height:1.55;margin:0;max-width:680px;}
+  .live-source{display:inline-flex;align-items:center;gap:7px;background:var(--green-bg);color:var(--green);border-radius:999px;padding:7px 11px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+  .live-source::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .po-group{margin-top:24px;}
+  .po-heading{display:flex;align-items:center;gap:9px;margin:0 0 11px;font-size:15px;}
+  .po-heading .count{font-size:11px;color:var(--text-muted);background:var(--gray-chip-bg);padding:3px 8px;border-radius:999px;font-weight:600;}
+  .call-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;}
+  .call-card{background:var(--card-bg);border:1px solid var(--border);border-radius:17px;padding:17px;box-shadow:var(--shadow);}
+  .call-dates{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px;}
+  .call-date{background:var(--row-bg);border:1px solid var(--border);border-radius:12px;padding:11px;min-width:0;}
+  .call-date .call-label{font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+  .call-date .call-value{font-size:13px;font-weight:700;line-height:1.35;}
+  .call-date .call-time{font-size:11px;color:var(--text-muted);margin-top:2px;}
+  .call-cycle{margin-top:13px;padding-top:13px;border-top:1px solid var(--border);}
+  .call-cycle-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+  .call-cycle-title{font-size:12px;color:var(--text-muted);}
+  .call-cycle-value{font-size:14px;font-weight:700;}
+  .call-note{font-size:11px;color:var(--text-muted);line-height:1.45;margin-top:7px;}
+  .setup-banner{background:var(--blue-bg);border:1px solid rgba(61,111,224,.2);border-radius:15px;padding:14px 16px;margin-bottom:18px;font-size:12.5px;line-height:1.55;color:var(--blue);}
+  @media (max-width:640px){.calls-intro{flex-direction:column}.call-dates{grid-template-columns:1fr}.call-grid{grid-template-columns:1fr}}
   footer.note{margin-top:26px;padding:14px 18px;border:1px dashed var(--border);border-radius:12px;font-size:12.5px;color:var(--text-muted);line-height:1.6;}
   .loading, .fatal{padding:60px 20px;text-align:center;color:var(--text-muted);}
   .fatal{color:var(--red);}
@@ -225,6 +247,7 @@
 
   <nav class="tabs">
     <button class="active" data-view="overview">Overview</button>
+    <button data-view="calls">Calls</button>
     <button data-view="bottleneck">Bottleneck</button>
     <button data-view="performance">Performance</button>
   </nav>
@@ -245,7 +268,7 @@
 </header>
 
 <main id="main">
-  <div class="loading">Pulling live data from Notion…</div>
+  <div class="loading">Pulling live data from Notion and GHL…</div>
 </main>
 
 <script>
@@ -283,6 +306,25 @@ document.getElementById("themeBtn").addEventListener("click", ()=>{
 
 // ---------- data ----------
 function initials(name){ return name.split(" ").filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[ch]);
+}
+
+function callDateParts(iso){
+  if(!iso) return {date:"Not found", time:""};
+  const value = new Date(iso);
+  return {
+    date:value.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}),
+    time:value.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
+  };
+}
+
+function callStatus(client){
+  if(!client.nextCall) return {cls:"empty",label:"No next call"};
+  if(client.daysUntilNext<=1) return {cls:"risk",label:client.daysUntilNext<=0?"Today":"Tomorrow"};
+  if(client.daysUntilNext<=7) return {cls:"watch",label:`In ${client.daysUntilNext} days`};
+  return {cls:"ontrack",label:`In ${client.daysUntilNext} days`};
+}
 
 function chipClassAndLabel(idea){
   if(idea.excluded) return {cls:"excluded", label: idea.status || "Excluded"};
@@ -345,7 +387,7 @@ async function load(force){
     REPORT = data;
     render();
   }catch(e){
-    document.getElementById("main").innerHTML = `<div class="fatal">Couldn't load data: ${e.message}<br/><br/>Check that NOTION_TOKEN is set in this project's environment variables.</div>`;
+    document.getElementById("main").innerHTML = `<div class="fatal">Couldn't load data: ${e.message}<br/><br/>Check the project's Notion and GHL environment variables.</div>`;
   }finally{
     btn.disabled = false;
   }
@@ -367,7 +409,7 @@ function render(){
   document.getElementById("snapshotText").textContent = "Live · pulled " + asOf.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
   const allClients = REPORT.clients.filter(c => c.stats.suggested > 0);
-  populateClientDropdown(allClients);
+  populateClientDropdown(currentView === "calls" ? REPORT.clients : allClients);
   const visibleClients = selectedClient ? allClients.filter(c=>c.name===selectedClient) : allClients;
   const allIdeas = allClients.flatMap(c => c.ideas.map(i => ({...i, client:c.name})));
 
@@ -378,7 +420,7 @@ function render(){
   }
 
   const overdueIdeas = allIdeas.filter(i=>i.overdue);
-  if(overdueIdeas.length){
+  if(currentView !== "calls" && overdueIdeas.length){
     html += `<div class="banner">
       <div class="banner-title">⚠ ${overdueIdeas.length} ideas are past their 7-day check-by date and still not Published</div>
       <div class="banner-chips">
@@ -388,7 +430,7 @@ function render(){
   }
 
   const o = REPORT.overall;
-  html += `<div class="overall-row">
+  if(currentView !== "calls") html += `<div class="overall-row">
     <div class="stat-card"><div class="num">${o.clientsWithIdeas}</div><div class="label">Clients with ⭐ ideas</div></div>
     <div class="stat-card"><div class="num">${o.totalSuggested}</div><div class="label">Ideas suggested</div></div>
     <div class="stat-card"><div class="num">${o.pct==null?'—':o.pct+'%'}</div><div class="label">Overall execution rate</div></div>
@@ -436,6 +478,59 @@ function render(){
     </div>`;
   });
   html += `</div></section>`;
+
+  const calls = REPORT.calls || {configured:false,missingConfig:[],summary:{},clients:[]};
+  const callClients = selectedClient ? calls.clients.filter(c=>c.name===selectedClient) : calls.clients;
+  const callGroups = {};
+  callClients.forEach(client=>{
+    const po = client.po || "Unassigned PO";
+    if(!callGroups[po]) callGroups[po]=[];
+    callGroups[po].push(client);
+  });
+  Object.values(callGroups).forEach(group=>group.sort((a,b)=>{
+    if(a.nextCall && b.nextCall) return new Date(a.nextCall.start)-new Date(b.nextCall.start);
+    return a.nextCall ? -1 : b.nextCall ? 1 : a.name.localeCompare(b.name);
+  }));
+  const sortedCallGroups = Object.entries(callGroups).sort(([,a],[,b])=>{
+    const aNext=a.find(c=>c.nextCall)?.nextCall?.start;
+    const bNext=b.find(c=>c.nextCall)?.nextCall?.start;
+    if(aNext && bNext) return new Date(aNext)-new Date(bNext);
+    return aNext ? -1 : bNext ? 1 : 0;
+  });
+  const callSummary = calls.summary || {};
+  html += `<section class="view ${currentView==='calls'?'active':''}" id="view-calls">
+    <div class="calls-intro">
+      <div><h2>Strategy calls</h2><p>Live GHL bookings for every PO portfolio. A moved booking automatically becomes the new next-call date. Idea delivery covers the current call-to-call cycle.</p></div>
+      ${calls.configured && !calls.error?`<span class="live-source">Live from GHL</span>`:""}
+    </div>
+    ${!calls.configured?`<div class="setup-banner"><b>GHL connection needs finishing.</b> Add ${escapeHtml((calls.missingConfig||[]).join(", "))} in Vercel. Existing Notion views remain fully available.</div>`:""}
+    ${calls.error?`<div class="error-banner">⚠ GHL calendar couldn't load: ${escapeHtml(calls.error)}. The existing Notion data is unaffected.</div>`:""}
+    <div class="overall-row">
+      <div class="stat-card"><div class="num">${callSummary.clientsWithNextCall||0}</div><div class="label">Next calls scheduled</div></div>
+      <div class="stat-card"><div class="num">${callSummary.callsInNext7Days||0}</div><div class="label">Calls in the next 7 days</div></div>
+      <div class="stat-card"><div class="num">${callSummary.postedThisCycle||0}/${callSummary.suggestedThisCycle||0}</div><div class="label">Ideas posted this call cycle</div></div>
+      <div class="stat-card"><div class="num" style="color:${callSummary.missingMatches?'var(--amber)':'var(--green)'}">${callSummary.missingMatches||0}</div><div class="label">Clients without a GHL match</div></div>
+    </div>
+    ${sortedCallGroups.map(([po,clients])=>`<div class="po-group">
+      <h3 class="po-heading">${escapeHtml(po)} <span class="count">${clients.length} project${clients.length===1?'':'s'}</span></h3>
+      <div class="call-grid">${clients.map(client=>{
+        const last=callDateParts(client.lastCall?.start), next=callDateParts(client.nextCall?.start), status=callStatus(client);
+        const cycle=client.cycle||{};
+        return `<article class="call-card">
+          <div class="card-head"><div class="client-id"><div class="avatar">${escapeHtml(initials(client.name))}</div><div style="min-width:0"><div class="client-name" title="${escapeHtml(client.name)}">${escapeHtml(client.name)}</div><div class="client-meta">${escapeHtml(client.projectType||"Client")} · PO: ${escapeHtml(client.po||"Unassigned")}</div></div></div><span class="status-pill ${status.cls}">${escapeHtml(status.label)}</span></div>
+          <div class="call-dates">
+            <div class="call-date"><div class="call-label">Previous strategy call</div><div class="call-value">${last.date}</div><div class="call-time">${last.time||"No matching event in range"}</div></div>
+            <div class="call-date"><div class="call-label">Next strategy call</div><div class="call-value">${next.date}</div><div class="call-time">${next.time||"Book as “Client × Strategy team”"}</div></div>
+          </div>
+          <div class="call-cycle">
+            <div class="call-cycle-head"><span class="call-cycle-title">⭐ ideas posted before next call</span><span class="call-cycle-value">${cycle.available?`${cycle.posted}/${cycle.suggested}`:'—'}</span></div>
+            ${cycle.available?`<div class="bar-track"><div class="bar-fill" style="width:${cycle.pct||0}%"></div></div><div class="call-note">Ideas added since the previous call; excluded ideas do not count.</div>`:`<div class="call-note">Previous call not matched, so this cycle's count is intentionally not guessed.</div>`}
+          </div>
+        </article>`;
+      }).join("")}</div>
+    </div>`).join("")}
+    ${!sortedCallGroups.length?`<div class="panel" style="color:var(--text-muted);font-size:13px">No clients match this filter.</div>`:""}
+  </section>`;
 
   const notDue = allIdeas.filter(i=>!i.executed && !i.excluded && i.daysLeft>=0).length;
   const overdueInProgress = allIdeas.filter(i=>i.overdue && i.bucket!=="gray").length;
