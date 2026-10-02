@@ -14,6 +14,11 @@
 const NOTION_VERSION = "2025-09-03";
 const PROJECT_TRACKER_DATA_SOURCE_ID = "b6b396fe-f0cf-4d7e-9845-e18c630c0ae7";
 const STAR = "\u{1F31F}"; // 🌟
+const {
+  buildStrategyCallReport,
+  fetchStrategyCalendarEvents,
+  readGhlConfig
+} = require("../lib/strategy-calls");
 
 // Some client boards phrase their Status options slightly differently
 // (e.g. "Published" vs "PUBLISHED"). Classify by keyword instead of an
@@ -224,6 +229,38 @@ async function buildReport() {
   const denom = totalSuggested - totalExcluded;
 
   const performance = buildPerformance(clientReports, now);
+  const ghlConfig = readGhlConfig();
+  const missingGhlConfig = [
+    !ghlConfig.token && "GHL_ACCESS_TOKEN",
+    !ghlConfig.locationId && "GHL_LOCATION_ID",
+    !ghlConfig.calendarId && "GHL_STRATEGY_CALENDAR_ID"
+  ].filter(Boolean);
+  let calls = {
+    ...buildStrategyCallReport(clientReports, [], now),
+    configured: missingGhlConfig.length === 0,
+    missingConfig: missingGhlConfig,
+    error: null,
+    rangeStart: null,
+    rangeEnd: null,
+    eventsFetched: 0
+  };
+
+  if (calls.configured) {
+    try {
+      const calendar = await fetchStrategyCalendarEvents(ghlConfig, now);
+      calls = {
+        ...buildStrategyCallReport(clientReports, calendar.events, now),
+        configured: true,
+        missingConfig: [],
+        error: null,
+        rangeStart: calendar.rangeStart,
+        rangeEnd: calendar.rangeEnd,
+        eventsFetched: calendar.events.length
+      };
+    } catch (error) {
+      calls.error = error.message;
+    }
+  }
 
   return {
     asOf: now.toISOString(),
@@ -235,6 +272,7 @@ async function buildReport() {
     },
     clients: clientReports.sort((a, b) => b.stats.overdue - a.stats.overdue),
     performance,
+    calls,
     errors
   };
 }
